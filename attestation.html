@@ -1,0 +1,61 @@
+<html>
+  <head>
+    <meta name="author" content="E. Goudot">
+    <meta charset="UTF-8">
+    <title>Attestation 2</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="qrcode.min.js"></script>
+    <script src="date.format.js"></script>
+	<style>
+	.title {font-size: 120%;}
+	</style>
+  </head>
+<body>
+  <form>
+    Nom: <input class="target" name="name" id="name"/>, Prénom: <input class="target" name="surname" id="surname"/><br>
+    Né(e) le: <input class="target" name="birthdate" id="birthdate"/> à <input class="target" name="birthplace" id="birthplace"/><br>
+    Adresse: <input class="target" name="adr" id="adr"/> CP: <input class="target" name="post" id="post"/>, Ville: <input class="target" name="town" id="town"/><br>
+    Sortie: <input class="target" name="date" id="date" size="8"/> heure <input class="target" name="time" id="time" size="2"/> <a href="#" onclick='chgTime(0)'>maintenant</a><br>
+  </form>
+  <hr>
+  <div class='title'>ATTESTATION DE DÉPLACEMENT DÉROGATOIRE</div>
+  <div>En application du décret n°2020-1310 du 29 octobre 2020 prescrivant les mesures générales nécessaires pour faire face à l'épidémie de Covid19 dans le cadre de l'état d'urgence sanitaire</div>
+  <div>Je soussigné(e),</div>
+  <div>Mme/M. :<inline id='Vname'></inline> <inline id='Vsurname'></inline></div>
+  
+  <div id="QR"></div>
+  <script>
+  
+  function chgTime(offset) {
+    var now = new Date();
+	//dateFormat(now, "dddd, mmmm dS, yyyy, h:MM:ss TT");
+    $("input#date").val(now.format('dd/mm/yyyy'));
+    $("input#time").val(now.format('HH:MM'));
+    update()
+    return 0;
+    }
+    
+  $( ".target" ).change(update);
+
+
+  function update() {
+  //alert( "Handler for .change() called." );
+//~   console.log("name: "+$("input#name").val()+" "+$("input#surname").val());
+  msg = "Cree le: 03/11/2020 a 07h24;\n"
+	+" Nom: "+$("input#name").val()+";\n"
+	+" Prenom: "+$("input#surname").val()+";\n"
+	+" Naissance: "+$("input#birthdate").val()+" a "+$("input#birthplace").val()+";\n"
+	+" Adresse: "+$("input#adr").val()+" "+$("input#post").val()+" "+$("input#town").val()+";\n"
+	+" Sortie: "+$("input#date").val()+" a "+$("input#time").val()+";\n"
+	+" Motif: "+$("input#motif").val()
+	;
+  console.log(msg);
+  $('#Vname').html($("input#name").val());
+  $('#Vsurname').html($("input#surname").val());
+  qr = new QRCode(msg);
+//~   console.log(qr);
+  $("div#QR").html(qr);
+  };
+  //document.body.appendChild( new QRCode('Good Luck') );
+  </script>
+</body>
