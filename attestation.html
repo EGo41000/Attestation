@@ -2,60 +2,87 @@
   <head>
     <meta name="author" content="E. Goudot">
     <meta charset="UTF-8">
-    <title>Attestation 2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Attestation</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="qrcode.min.js"></script>
     <script src="date.format.js"></script>
 	<style>
-	.title {font-size: 120%;}
+	inline.target {color: black;}
+	#attestation {display: none;}
 	</style>
   </head>
 <body>
-  <form>
-    Nom: <input class="target" name="name" id="name"/>, Prénom: <input class="target" name="surname" id="surname"/><br>
-    Né(e) le: <input class="target" name="birthdate" id="birthdate"/> à <input class="target" name="birthplace" id="birthplace"/><br>
-    Adresse: <input class="target" name="adr" id="adr"/> CP: <input class="target" name="post" id="post"/>, Ville: <input class="target" name="town" id="town"/><br>
-    Sortie: <input class="target" name="date" id="date" size="8"/> heure <input class="target" name="time" id="time" size="2"/> <a href="#" onclick='chgTime(0)'>maintenant</a><br>
+  <form id="questionnaire">
+    Nom: <input class="targetX" name="name" id="nameX"/>, Prénom: <input class="target" name="surnameX" id="surnameX"/><br>
+    Né(e) le: <input class="target" name="birthdateX" id="birthdateX"/> à <input class="target" name="birthplaceX" id="birthplaceX"/><br>
+    Adresse: <input class="target" name="adrX" id="adrX"/> CP: <input class="target" name="postX" id="postX"/>, Ville: <input class="target" name="townX" id="townX"/><br>
+     <button type="button" onclick='update()'>OK !</button> 
   </form>
-  <hr>
-  <div class='title'>ATTESTATION DE DÉPLACEMENT DÉROGATOIRE</div>
+  
+<form id="attestation">
+  <h2 class='title'>ATTESTATION DE DÉPLACEMENT DÉROGATOIRE</h2>
   <div>En application du décret n°2020-1310 du 29 octobre 2020 prescrivant les mesures générales nécessaires pour faire face à l'épidémie de Covid19 dans le cadre de l'état d'urgence sanitaire</div>
   <div>Je soussigné(e),</div>
-  <div>Mme/M. :<inline id='Vname'></inline> <inline id='Vsurname'></inline></div>
+  <div>Mme/M. :<inline id='name' class="target" contenteditableOLD="true">NAME</inline> <inline id='surname' class="target" contenteditableOLD="true">SURNAME</inline></div>
+  <div>Né(e) le :<inline id='birthdate' class="target" contenteditableOLD="true">00/00/0000</inline> à <inline id='birthplace' class="target" contenteditableOLD="true">LIEU</inline></div>
+  <div>Demeurant :<inline id='adr' class="target" contenteditableOLD="true">ADRESSE</inline> <inline id='cp' class="target" contenteditableOLD="true">00000</inline> <inline id='town' class="target" contenteditableOLD="true">VILLE</inline></div>
+  <div>certifie que mon déplacement est lié au motif suivant (cocher la case) autorisé par le décret n°2020-1310 du 29 octobre 2020 prescrivant les mesures générales nécessaires pour faire face à l'épidémie de Covid19 dans le cadre de l'état d'urgence sanitaire (1):</div>
+
+  <input type="radio" name='motif' value='travail'><label>Déplacements entre le domicile et le lieu d'exercice de l'activité professionnelle ou le lieu d'enseignement et de formation</label></input><br/>
+  <input type="radio" name='motif' value='sante'/><label>Déplacements pour des consultations et soins ne pouvant être assurés à distance et ne pouvant être différés ou pour l'achat de produits de santé</label></input><br/>
+  <input type="radio" name='motif' value='famille'/><label>Déplacements pour motif familial impérieux, pour l'assistance aux personnes vulnérables ou précaires ou pour la garde d'enfants</label></input><br/>
+  <input type="radio" name='motif' value='handicap'/><label>Déplacements des personnes en situation de handicap et de leur accompagnant</label></input><br/>
+  <input type="radio" name='motif' value='convocation'/><label>Déplacements pour répondre à une convocation judiciaire ou administrative</label></input><br/>
+  <input type="radio" name='motif' value='missions'/><label>Déplacements pour participer à des missions d'intérêt général sur demande de l'autorité administrative</label></input><br/>
+  <input type="radio" name='motif' value='transits'/>Déplacements liés à des transits pour des déplacements de longues distances</label></input><br/>
+  <input type="radio" name='motif' value='animaux'/><label>Déplacements brefs, dans un rayon maximal d'un kilomètre autour du domicile pour les besoins des animaux de compagnie</label></input><br/>
+
+  <div>Fait à : <inline id='town2'></inline></div>
+  <div>Le : <inline id='date'></inline> à <inline id='time'></inline></div>
+  <div>(Date et heure de début de sortie à mentionner obligatoirement)</div>
+  <div>Signature: <inline id='surname2' class="target" contenteditableOLD="true">SURNAME</inline></div>
   
   <div id="QR"></div>
+</form>
+
+  <div style="font-size:80%">1: Les personnes souhaitant bénéficier de l'une de ces exceptions doivent se munir s'il y a lieu, lors de leurs déplacements hors de leur domicile, d'un document leur permettant de justifier que le déplacement considéré entre dans le champ de l'une de ces exceptions.</div>
+
   <script>
   
-  function chgTime(offset) {
-    var now = new Date();
-	//dateFormat(now, "dddd, mmmm dS, yyyy, h:MM:ss TT");
-    $("input#date").val(now.format('dd/mm/yyyy'));
-    $("input#time").val(now.format('HH:MM'));
-    update()
-    return 0;
-    }
-    
-  $( ".target" ).change(update);
+$('input[type=radio]').change(update);
 
 
   function update() {
-  //alert( "Handler for .change() called." );
-//~   console.log("name: "+$("input#name").val()+" "+$("input#surname").val());
-  msg = "Cree le: 03/11/2020 a 07h24;\n"
-	+" Nom: "+$("input#name").val()+";\n"
-	+" Prenom: "+$("input#surname").val()+";\n"
-	+" Naissance: "+$("input#birthdate").val()+" a "+$("input#birthplace").val()+";\n"
-	+" Adresse: "+$("input#adr").val()+" "+$("input#post").val()+" "+$("input#town").val()+";\n"
-	+" Sortie: "+$("input#date").val()+" a "+$("input#time").val()+";\n"
-	+" Motif: "+$("input#motif").val()
+    $('#questionnaire').hide();
+    $('#attestation').show();
+    x={}
+    var offset = 10*60;
+    var now = new Date(new Date().getTime() - (offset * 1000));
+    x.date = now.format('dd/mm/yyyy');
+    x.time = now.format('HH:MM');
+    $("#date").text(x.date);
+    $("#time").text(x.time);
+    x.motif = $("input[type='radio']:checked").val();
+    'name,surname,birthplace,birthdate,adr,post,town'.split(',').forEach(function (i){
+	x[i] = $("#"+i+"X").val();
+	$('#'+i).html(x[i]);
+	})
+	$('#town2').html(x.town);
+	$('#surname2').html(x.surname);
+    console.log(x);
+  msg = "Cree le: "+x.date+" a 07h00;\n"
+	+" Nom: "+x.name+";\n"
+	+" Prenom: "+x.surname+";\n"
+	+" Naissance: "+x.birthdate+" a "+x.birthplace+";\n"
+	+" Adresse: "+x.adr+" "+x.post+" "+x.town+";\n"
+	+" Sortie: "+x.date+" a "+x.time+";\n"
+	+" Motif: "+x.motif
 	;
   console.log(msg);
-  $('#Vname').html($("input#name").val());
-  $('#Vsurname').html($("input#surname").val());
+  $('#Ctown').text($("#town").text());
   qr = new QRCode(msg);
-//~   console.log(qr);
   $("div#QR").html(qr);
   };
-  //document.body.appendChild( new QRCode('Good Luck') );
   </script>
 </body>
